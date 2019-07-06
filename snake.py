@@ -58,7 +58,6 @@ def main():
     speed_x= unit
     speed_y = 0
     x, y = head_x, head_y
-    # value = 4 
 
     show_score(0)
 
@@ -82,9 +81,7 @@ def main():
 
         # Draw body, based on location of head
         for seg in range(1, len(snake) - 2):
-            # print(str(snake[seg][0]) + ' ' + str(snake[seg][1]))
             pygame.draw.rect(screen, colors[seg], [snake[seg][0], snake[seg][1], unit, unit])
-            # print('new seg at ' + str(snake[seg][0]) + ', ' + str(snake[seg][1]))
 
         # Draw food
         food = pygame.draw.rect(screen, food_color, [food_x, food_y, unit, unit])
@@ -116,21 +113,11 @@ def main():
         head_y += speed_y
         head = head.move(head_x, head_y)
         r,g,b = color
-        # color = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
         for i in range(len(snake) - 1, 0, -1):
-            # print(str(i) + ' = ' + str(snake[i - 1]))
             snake[i] = snake[i - 1]
             colors[i] = colors[i - 1]
         snake[0] = (head_x, head_y)
         colors[0] = color
-        # print(snake)
-        # sys.exit()
-
-        """
-        # Walls
-        if head.left < 0 or head.right > width or head.top < 0 or head.bottom > height:
-            running = False
-        """
 
         # Looping bounds
         if head_x < 0:
@@ -145,7 +132,7 @@ def main():
         # Check if snake is hitting self
         if (head_x, head_y) in snake[1:]:
             print("You lose.")
-            running = false
+            running = False
 
         # Check if food is being eaten
         if (head_x, head_y) == (food_x, food_y):
