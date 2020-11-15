@@ -14,6 +14,9 @@ class Color(Enum):
 class SnakeGame():
 
     def __init__(self, init_score=0, init_length=10, init_color=Color.WHITE.value):
+        """
+        Runs the Snake game.
+        """
         self.score = init_score
         self.snake = []
         self.colors = []
@@ -22,36 +25,41 @@ class SnakeGame():
         self.UNIT = 10
         self.FPS = 16
 
-    def snake_length(self):
+    def _snake_length(self):
         return len(self.snake)
 
-    def random_color(self):
+    def _random_color(self):
         return (random.randint(0, 255),
             random.randint(0, 255),
             random.randint(0, 255))
 
-    def new_food_coords(self): 
+    def _new_food_coords(self): 
         x = random.randint(0, (width - self.UNIT) / self.UNIT) * self.UNIT
         y = random.randint(0, (height - self.UNIT) / self.UNIT) * self.UNIT
         return x, y
 
-    def text_objects(self, text, font):
+    def _text_objects(self, text, font):
         text_surface = font.render(text, True, Color.WHITE.value)
         return text_surface, text_surface.get_rect()
 
-    def update_scoreboard(self):
+    def _update_scoreboard(self):
         score_font = pygame.font.Font(None, 50)
-        text_surf, text_rect = self.text_objects(str(self.score), score_font)
+        text_surf, text_rect = self._text_objects(str(self.score), score_font)
         text_rect.center = (width - 20, height - 30)
         screen.blit(text_surf, text_rect)
 
     def play(self):
+        """
+        Initializes gametime variables and contains the game loop.
+        """
+
         running = True
-        score = 0
         color = self.INIT_COLOR
-        food_color = self.random_color()
+        food_color = self._random_color()
+
         pygame.init()
         clock = pygame.time.Clock()
+
         head_x = 350
         head_y = 250
         speed_x= self.UNIT
@@ -59,7 +67,7 @@ class SnakeGame():
         x, y = head_x, head_y
 
         # Start the scoreboard
-        self.update_scoreboard()
+        self._update_scoreboard()
 
         # Start the snake
         self.snake.append((head_x, head_y))
@@ -69,8 +77,8 @@ class SnakeGame():
             self.colors.append(self.INIT_COLOR)
 
         # Drop the first food
-        food_x, food_y = self.new_food_coords()
-        food_color = self.random_color()
+        food_x, food_y = self._new_food_coords()
+        food_color = self._random_color()
 
         # Game loop
         while running:
@@ -111,7 +119,7 @@ class SnakeGame():
             head_y += speed_y
             head = head.move(head_x, head_y)
             r,g,b = color
-            for i in range(self.snake_length() - 1, 0, -1):
+            for i in range(self._snake_length() - 1, 0, -1):
                 self.snake[i] = self.snake[i - 1]
                 self.colors[i] = self.colors[i - 1]
             self.snake[0] = (head_x, head_y)
@@ -129,19 +137,16 @@ class SnakeGame():
             
             # Check if snake is hitting self
             if (head_x, head_y) in self.snake[1:]:
-                print("You lose.")
                 running = False
 
             # Check if food is being eaten
             if (head_x, head_y) == (food_x, food_y):
                 self.score += 1
-                self.update_scoreboard()
-                print("Score: " + str(self.score))
-                food_x, food_y = self.new_food_coords()
+                self._update_scoreboard()
+                food_x, food_y = self._new_food_coords()
                 color = food_color
-                food_color = self.random_color()
-                print("New food at " + str((food_x, food_y)))
-                last_x, last_y = self.snake[self.snake_length() - 1]
+                food_color = self._random_color()
+                last_x, last_y = self.snake[self._snake_length() - 1]
                 if speed_y > 0:
                     seg = (last_x, last_y - self.UNIT)
                 if speed_y < 0:
@@ -154,10 +159,10 @@ class SnakeGame():
                 self.colors.append(self.INIT_COLOR)
 
             # Update screen
-            self.update_scoreboard()
+            self._update_scoreboard()
             pygame.display.flip()
             clock.tick(self.FPS)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     game = SnakeGame()
     game.play()
