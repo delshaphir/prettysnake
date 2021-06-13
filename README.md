@@ -2,8 +2,15 @@
 An extremely simple Snake game written in Python by [jedfras](http://www.github.com/jedfras).
 
 ## Getting Started
-Clone this repository, or just download snake.py, or open it and copy all the code and save all the code and run it.
+
+**Mac OS & Linux**
+
+1. Download `dist/snake`
+2. Run it by:
+   - Adding it as an application, or
+   - Navigating to its directory and running it from the command line with `./snake`
 
 ## Built with
-* [Python](http://www.python.org)
-* [PyGame](http://www.pygame.org)
+* Written in [Python](http://www.python.org)
+* Using [PyGame](http://www.pygame.org)
+* Compiled with [PyInstaller](https://www.pyinstaller.org)

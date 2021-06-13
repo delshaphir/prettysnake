@@ -1,10 +1,15 @@
 from enum import Enum
 import pygame
-import sys
 import random
+import sys
+import os
+
+pygame.init()
 
 size = width, height = (500, 500)
 screen = pygame.display.set_mode(size)
+
+DEFAULT_FONT = 'Arial'
 
 # Colors
 class Color(Enum):
@@ -15,11 +20,12 @@ class SnakeGame():
 
     def __init__(self, init_score=0, init_length=10, init_color=Color.WHITE.value):
         """
-        Runs the Snake game.
+        Manages a game of Snake.
         """
         self.score = init_score
         self.snake = []
         self.colors = []
+        self.all_colors = set()
         self.INIT_LENGTH = init_length
         self.INIT_COLOR = init_color
         self.UNIT = 10
@@ -38,12 +44,12 @@ class SnakeGame():
         y = random.randint(0, (height - self.UNIT) / self.UNIT) * self.UNIT
         return x, y
 
-    def _text_objects(self, text, font):
-        text_surface = font.render(text, True, Color.WHITE.value)
+    def _text_objects(self, text, font, color=Color.WHITE.value):
+        text_surface = font.render(text, True, color)
         return text_surface, text_surface.get_rect()
 
     def _update_scoreboard(self):
-        score_font = pygame.font.Font(None, 50)
+        score_font = pygame.font.SysFont(DEFAULT_FONT, 30)
         text_surf, text_rect = self._text_objects(str(self.score), score_font)
         text_rect.center = (width - 20, height - 30)
         screen.blit(text_surf, text_rect)
@@ -57,7 +63,8 @@ class SnakeGame():
         color = self.INIT_COLOR
         food_color = self._random_color()
 
-        pygame.init()
+        if not pygame.get_init():
+            pygame.init()
         clock = pygame.time.Clock()
 
         head_x = 350
@@ -157,12 +164,68 @@ class SnakeGame():
                     seg = (last_x + self.UNIT, last_y)
                 self.snake.append(seg)
                 self.colors.append(self.INIT_COLOR)
+                self.all_colors.add(food_color)
 
             # Update screen
             self._update_scoreboard()
             pygame.display.flip()
             clock.tick(self.FPS)
+        self._game_over()
+    
+    def _game_over(self):
+        screen.fill(Color.BLACK.value)
 
-if __name__ == "__main__":
+        # Show game over text
+        game_over_font = pygame.font.SysFont(DEFAULT_FONT, 18)
+        game_over_str = 'game over. score: %i. press r to restart' % self.score
+        text_surf, text_rect = self._text_objects(game_over_str, game_over_font)
+        text_rect.center = (width / 2, 12)
+        screen.blit(text_surf, text_rect)
+
+        self._show_colors()
+
+        on_menu = True
+        while on_menu:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    on_menu = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        on_menu = False
+                    if event.key == pygame.K_r:
+                        self._restart()
+            if pygame.display.get_init():
+                pygame.display.flip()
+        pygame.quit()
+    
+    def _restart(self):
+        self.__init__()
+        self.play()
+
+    def _show_colors(self):
+        font = pygame.font.SysFont(DEFAULT_FONT, 24)
+        text_x, text_y = 60, 40
+        
+        # Print each color's hex value in its color
+        for color in self.all_colors:
+            color_hex = self._rgb_to_hex(color)
+            surf, rect = self._text_objects(color_hex, font, color=color)
+            rect.center = (text_x, text_y)
+            screen.blit(surf, rect)
+            text_y += 24
+            if text_y > height - 20:
+                text_x += 100
+                text_y = 40
+
+    def _rgb_to_hex(self, color: Color):
+        """ Returns a string hex representation of a color (rgb tuple). """
+        return '#%02x%02x%02x' % (color[0], color[1], color[2])
+
+if __name__ == '__main__':
+    # For pyinstaller
+    if getattr(sys, 'frozen', False):
+        os.chdir(sys._MEIPASS)
+    
+    # Start game
     game = SnakeGame()
     game.play()
