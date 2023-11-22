@@ -1,5 +1,5 @@
 # Pretty Snake
-An extremely simple Snake game written in Python by [jedfras](http://www.github.com/jedfras).
+An extremely simple Snake game written in Python by [del shaphir](http://www.github.com/delshaphir).
 
 ## Getting Started
 
